@@ -209,6 +209,15 @@
         </div>
       </div>
 
+      <!-- Key Takeaways Summary (3 bullets) -->
+      <article class="card card-takeaways" id="card-takeaways">
+        <h3 class="card-title text-amber">
+          <span class="card-icon" aria-hidden="true">💡</span> Key Takeaways
+        </h3>
+        <p class="coverage-sub">Three core trade-offs and critical dependencies identified in this decision landscape.</p>
+        <ul id="list-takeaways" class="analysis-list takeaways-list"></ul>
+      </article>
+
       <!-- Restated Summary Card -->
       <article class="card card-summary">
         <h3 class="card-title">Objective Restatement</h3>
@@ -268,12 +277,24 @@
           <ul id="list-risks" class="analysis-list complex-list"></ul>
         </article>
 
-        <!-- Another Perspective to Weigh (Steelman) -->
+        <!-- Balanced Perspectives: One Steelman for EACH Side -->
         <article class="card card-perspective">
           <h3 class="card-title text-cyan">
-            <span class="card-icon" aria-hidden="true">🧭</span> Another Perspective to Weigh
+            <span class="card-icon" aria-hidden="true">⚖️</span> Balanced Perspectives to Weigh
           </h3>
-          <p id="perspective-text" class="perspective-body"></p>
+          <p class="coverage-sub">Constructive steelman arguments presented for both choices so neither path is favoured.</p>
+          <div class="perspective-dual-grid">
+            <div class="perspective-block">
+              <h4 class="perspective-block-title text-success">A perspective favouring going ahead</h4>
+              <p id="perspective-ahead-text" class="perspective-body"></p>
+            </div>
+            <div class="perspective-block">
+              <h4 class="perspective-block-title text-purple">A perspective favouring holding back</h4>
+              <p id="perspective-back-text" class="perspective-body"></p>
+            </div>
+          </div>
+          <!-- Fallback single perspective container if legacy string format is received -->
+          <p id="perspective-text" class="perspective-body" style="display: none;"></p>
         </article>
       </div>
 
@@ -344,13 +365,14 @@
   <footer class="app-footer" role="contentinfo">
     <div class="footer-container">
       <p class="footer-note">
-        <strong>The Blind Spot</strong> — Built with Python 3.12, Flask, Google Gemini (2.5 Flash), and Google Cloud Run.
+        <strong>The Blind Spot</strong> — Built with Python 3.12, Flask, Google Gemini (<span id="footer-model-name">{{ model_name or "gemini-2.5-flash" }}</span>), and Google Cloud Run.
       </p>
       <p class="footer-sub">
         Dedicated to rigorous cognitive reflection and non-directive AI assistance.
       </p>
     </div>
   </footer>
+
 
   <!-- Scripts -->
   <script src="/static/app.js"></script>

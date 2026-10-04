@@ -34,17 +34,71 @@ FORBIDDEN_PATTERNS: list[str] = [
     r"\bi advise\b",
     r"\bwe advise\b",
     r"\bmy advice\b",
+    r"\bworth the risk\b",
+    r"\bif you decide to\b",
+    r"\bis it worth\b",
+    r"\bwhy take the risk\b",
+    r"\bwhy risk\b",
+    r"\bwould it be worth\b",
+    r"\bis it really worth\b",
+    r"\bwouldn't it be better\b",
+    r"\bisn't it better\b",
+    r"\bshould you really\b",
+    r"\bshould you just\b",
+]
+
+# Dedicated patterns specifically for flagging leading phrasing in probing questions
+LEADING_QUESTION_PATTERNS: list[str] = [
+    r"\bworth the risk\b",
+    r"\bif you decide to\b",
+    r"\bis it worth\b",
+    r"\bwhy take the risk\b",
+    r"\bwhy risk\b",
+    r"\bwould it be worth\b",
+    r"\bis it really worth\b",
+    r"\bwouldn't it be better\b",
+    r"\bisn't it better\b",
+    r"\bshould you really\b",
+    r"\bshould you just\b",
 ]
 
 # Compiled regular expressions for fast scanning
 COMPILED_PATTERNS: list[re.Pattern] = [
     re.compile(p, re.IGNORECASE) for p in FORBIDDEN_PATTERNS
 ]
+COMPILED_LEADING_PATTERNS: list[re.Pattern] = [
+    re.compile(p, re.IGNORECASE) for p in LEADING_QUESTION_PATTERNS
+]
 
 # Safe neutral fallback replacement note
 DEFAULT_NEUTRAL_NOTE: str = (
     "[Reflective note: Consideration highlighted for independent user evaluation.]"
 )
+
+
+def find_leading_question_violations(question: str) -> list[str]:
+    """Find leading, biased, or choice-assuming phrasing in a probing question.
+
+    Args:
+        question: Probing question text to evaluate.
+
+    Returns:
+        List of matched leading phrases.
+    """
+    if not isinstance(question, str):
+        return []
+    violations: list[str] = []
+    for pattern in COMPILED_LEADING_PATTERNS:
+        matches = pattern.findall(question)
+        if matches:
+            violations.extend(matches)
+    return violations
+
+
+def has_leading_question_language(question: str) -> bool:
+    """Return True if probing question contains leading or non-neutral phrasing."""
+    return bool(find_leading_question_violations(question))
+
 
 
 def find_violations(text: str) -> list[str]:

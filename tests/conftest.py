@@ -70,12 +70,20 @@ def mock_round1_result():
             {"category": "Opportunity cost", "status": "not_mentioned"},
             {"category": "Values and priorities", "status": "covered"}
         ],
+        "key_takeaways": [
+            "Balancing a 40-hour internship with final-year capstone deliverables poses an unverified schedule conflict.",
+            "Career acceleration from early industry experience trades off against the risk of attendance-based graduation delays.",
+            "Contingency flexibility remains largely unconfirmed by official written college policies."
+        ],
         "probing_questions": [
             "If college administration strictly enforces the 75% attendance rule in month 3, what fallback options exist?",
-            "What would happen to your career trajectory if the internship is completed successfully but graduation is delayed by 6 months?",
+            "What criteria would clarify whether prioritizing early industry experience or academic coursework serves your long-term goals?",
             "What concrete questions could you ask current interns at this startup regarding realistic workload and mentorship?"
         ],
-        "another_perspective": "One perspective to weigh is that graduation comes only once and solidifies your foundational credentials, whereas entry-level internships and full-time hiring cycles run continuously throughout the year."
+        "another_perspective": {
+            "perspective_favouring_going_ahead": "One perspective favouring going ahead is that practical production experience, a financial stipend, and industry connections can provide an immediate career jumpstart that distinguishes you upon graduation.",
+            "perspective_favouring_holding_back": "One perspective favouring holding back is that on-time graduation and protecting your academic standing secure your foundational degree credentials, while new graduate hiring cycles recur regularly."
+        }
     }
 
 

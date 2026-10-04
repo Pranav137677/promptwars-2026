@@ -167,7 +167,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     # ---------------------------------------------------------
     @app.route("/")
     def index():
-        return render_template("index.html")
+        return render_template("index.html", model_name=cfg.gemini_model)
 
     @app.route("/health")
     def health_check():
@@ -183,7 +183,10 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     @app.route("/config")
     def client_config():
         """Safe public configuration endpoint for client Firebase SDK initialization."""
-        return jsonify(cfg.client_firebase_config())
+        payload = cfg.client_firebase_config()
+        payload["model"] = cfg.gemini_model
+        return jsonify(payload)
+
 
     # ---------------------------------------------------------
     # API Routes

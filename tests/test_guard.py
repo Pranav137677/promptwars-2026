@@ -2,9 +2,11 @@
 
 from blindspot.guard import (
     DEFAULT_NEUTRAL_NOTE,
+    find_leading_question_violations,
     find_violations,
     get_all_violations,
     has_directive_language,
+    has_leading_question_language,
     redact_directive_language,
     sanitize_text,
 )
@@ -109,3 +111,34 @@ def test_empty_or_non_string_inputs():
     assert has_directive_language(42) is False
     assert has_directive_language([]) is False
     assert has_directive_language({}) is False
+
+
+def test_guard_flags_leading_phrasing_in_probing_questions():
+    """Verify that guard flags leading, biased, or choice-assuming phrasing in probing questions."""
+    leading_questions = [
+        "Is accepting the internship really worth the risk to your graduation date?",
+        "If you decide to take the offer, how will you manage final exams?",
+        "Why take the risk of failing attendance requirements for this stipend?",
+        "Wouldn't it be better to wait until after college to start working?",
+        "Is it worth sacrificing your GPA for 6 months of experience?",
+        "Should you really prioritize short-term cash over your degree?",
+    ]
+
+    for question in leading_questions:
+        violations = find_leading_question_violations(question)
+        assert len(violations) > 0, f"Expected violation for leading question: '{question}'"
+        assert has_leading_question_language(question) is True
+        assert has_directive_language(question) is True
+
+    # Confirm neutral, balanced questions pass without flagging
+    neutral_questions = [
+        "What criteria would clarify whether prioritizing early industry experience or academic coursework serves your long-term goals?",
+        "What concrete information is known about the team culture and expected daily hours at the startup?",
+        "How do the consequences of accepting compare with the consequences of declining across your 2-year timeline?",
+        "What specific attendance threshold triggers college disciplinary action according to the written handbook?",
+    ]
+
+    for question in neutral_questions:
+        assert find_leading_question_violations(question) == []
+        assert has_leading_question_language(question) is False
+

@@ -25,6 +25,7 @@ def test_client_config_endpoint(client):
     data = res.get_json()
     assert "enabled" in data
     assert "projectId" in data
+    assert "model" in data
     # Crucially ensure no server secrets like gemini_api_key exist in output
     assert "gemini_api_key" not in data
     assert "GEMINI_API_KEY" not in data
@@ -56,6 +57,8 @@ def test_html_accessibility_elements(client):
     assert 'aria-live="polite"' in html
     assert 'id="results-heading"' in html
     assert 'tabindex="-1"' in html
+    assert 'id="card-takeaways"' in html
+    assert 'id="footer-model-name"' in html
     assert 'This tool prompts reflection. It does not make or recommend decisions.' in html
 
 
@@ -77,10 +80,13 @@ def test_api_analyze_internship_example(client, mock_round1_result):
         data = res.get_json()
         assert "analysis" in data
         analysis = data["analysis"]
+        assert len(analysis["key_takeaways"]) == 3
         assert len(analysis["factor_coverage"]) == 9
         assert len(analysis["unstated_assumptions"]) >= 2
         assert len(analysis["overlooked_factors"]) >= 3
         assert len(analysis["probing_questions"]) >= 3
+        assert "perspective_favouring_going_ahead" in analysis["another_perspective"]
+        assert "perspective_favouring_holding_back" in analysis["another_perspective"]
 
 
 def test_api_analyze_validation_errors(client):

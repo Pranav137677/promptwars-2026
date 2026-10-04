@@ -98,9 +98,28 @@ class FactorCoverageItem(BaseModel):
     )
 
 
+class DualPerspective(BaseModel):
+    """Balanced steelman perspectives presenting one constructive viewpoint for each side."""
+
+    perspective_favouring_going_ahead: str = Field(
+        ...,
+        description="A constructive steelman of the perspective favouring going ahead with the decision/option.",
+    )
+    perspective_favouring_holding_back: str = Field(
+        ...,
+        description="A constructive steelman of the perspective favouring holding back, declining, or delaying the decision/option.",
+    )
+
+
 class Round1AnalysisResponse(BaseModel):
     """Strict Gemini output schema for Round 1 blind spot discovery."""
 
+    key_takeaways: list[str] = Field(
+        ...,
+        min_length=3,
+        max_length=3,
+        description="Exactly 3 concise, balanced bullet points highlighting core tensions and dependencies without advice.",
+    )
     summary: str = Field(
         ...,
         description="Objective restatement of the decision and the user's stated reasons.",
@@ -127,12 +146,13 @@ class Round1AnalysisResponse(BaseModel):
     )
     probing_questions: list[str] = Field(
         ...,
-        description="3 to 6 open-ended probing questions that avoid yes/no answers.",
+        description="3 to 6 open-ended probing questions that avoid yes/no answers and are strictly non-leading.",
     )
-    another_perspective: str = Field(
+    another_perspective: DualPerspective = Field(
         ...,
-        description="A thoughtful steelman of an alternative view, framed strictly as 'one perspective to weigh'.",
+        description="One steelman for EACH side ('A perspective favouring going ahead' and 'A perspective favouring holding back') so neither is favoured.",
     )
+
 
 
 class QuestionAnswerPair(BaseModel):
