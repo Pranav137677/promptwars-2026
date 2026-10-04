@@ -1,3 +1,20 @@
+[project]
+name = "blindspot"
+version = "1.0.0"
+description = "Non-directive AI reasoning mirror"
+dependencies = [
+    "flask>=3.0.0",
+    "gunicorn>=21.0.0",
+    "google-genai>=2.28.0",
+    "flask-limiter>=3.5.0",
+    "flask-compress>=1.14.0",
+    "pydantic>=2.6.0",
+    "firebase-admin>=6.5.0",
+    "google-cloud-logging>=3.10.0",
+    "python-dotenv>=1.0.0",
+]
+requires-python = ">=3.11"
+
 [tool.ruff]
 line-length = 88
 target-version = "py312"
@@ -8,3 +25,9 @@ ignore = ["E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["blindspot"]
+
+[tool.vercel]
+entrypoint = "wsgi:app"
+
+
+
