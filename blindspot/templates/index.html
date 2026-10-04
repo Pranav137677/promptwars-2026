@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blind Spot — AI Reasoning Mirror</title>
+  <meta name="description" content="An accessible, AI-powered reasoning mirror that helps identify blind spots, unstated assumptions, and overlooked factors in your decisions without ever deciding for you.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- Accessible Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- App Header -->
+  <header class="app-header" role="banner">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1 class="brand-title">Blind Spot</h1>
+          <span class="brand-badge">AI Reasoning Mirror</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="btn-icon" type="button" aria-label="Switch between dark and light theme" title="Toggle theme">
+          <span id="theme-icon" aria-hidden="true">☀️</span>
+        </button>
+
+        <!-- Optional Firebase Auth Area -->
+        <div id="auth-area" class="auth-area">
+          <button id="btn-login" class="btn-auth" type="button" style="display: none;">
+            Sign in with Google
+          </button>
+          <div id="user-profile" class="user-profile" style="display: none;">
+            <span id="user-email" class="user-email"></span>
+            <button id="btn-history" class="btn-subtle" type="button">History</button>
+            <button id="btn-logout" class="btn-subtle" type="button">Sign out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main id="main-content" class="main-container" role="main">
+    
+    <!-- Mandatory Reflection Disclaimer -->
+    <div class="disclaimer-banner" role="region" aria-label="Core operational disclaimer">
+      <div class="disclaimer-icon" aria-hidden="true">⚖️</div>
+      <p class="disclaimer-text">
+        <strong>Core Principle:</strong> This tool prompts reflection. It does not make or recommend decisions.
+      </p>
+    </div>
+
+
+    <!-- Error Alert Box -->
+    <div id="error-box" class="alert-box alert-error" role="alert" style="display: none;" aria-live="assertive">
+      <span class="alert-icon" aria-hidden="true">⚠️</span>
+      <span id="error-message" class="alert-text"></span>
+      <button type="button" class="btn-close-alert" id="btn-dismiss-error" aria-label="Dismiss error">×</button>
+    </div>
+
+    <!-- Success / Notification Alert Box -->
+    <div id="status-box" class="alert-box alert-info" role="status" style="display: none;" aria-live="polite">
+      <span class="alert-icon" aria-hidden="true">ℹ️</span>
+      <span id="status-message" class="alert-text"></span>
+    </div>
+
+    <!-- Input Form Section (Round 1) -->
+    <section id="input-section" class="card-section" aria-labelledby="form-heading">
+      <div class="section-header">
+        <h2 id="form-heading" class="section-title">Describe Your Decision Context</h2>
+        <p class="section-subtitle">Surface unstated assumptions, overlooked factors, and cognitive blind spots before deciding.</p>
+        <button type="button" id="btn-internship-example" class="btn-pill" aria-label="Fill form with official internship student scenario">
+          💡 Try the internship example
+        </button>
+      </div>
+
+      <form id="decision-form" novalidate>
+        <!-- Field 1: Decision -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="decision-input" class="form-label">
+              What decision are you considering? <span class="required" aria-hidden="true">*</span>
+            </label>
+            <span id="count-decision" class="char-count" aria-live="polite">0 / 2000</span>
+          </div>
+          <textarea
+            id="decision-input"
+            name="decision"
+            class="form-control"
+            rows="3"
+            maxlength="2000"
+            required
+            aria-required="true"
+            placeholder="e.g., Accepting an offer for a 6-month software engineering internship"
+            aria-describedby="desc-decision count-decision"
+          ></textarea>
+          <span id="desc-decision" class="field-hint">State the specific choice or dilemma you are facing.</span>
+        </div>
+
+        <!-- Field 2: Details & Options -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="details-input" class="form-label">
+              Details and options
+            </label>
+            <span id="count-details" class="char-count" aria-live="polite">0 / 2000</span>
+          </div>
+          <textarea
+            id="details-input"
+            name="details"
+            class="form-control"
+            rows="4"
+            maxlength="2000"
+            placeholder="e.g., Stipend, schedule, location, role expectations, college commitments"
+            aria-describedby="desc-details count-details"
+          ></textarea>
+          <span id="desc-details" class="field-hint">Include numbers, constraints, locations, commitments, or alternatives you are weighing.</span>
+        </div>
+
+        <!-- Field 3: Reasons Leaning -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="reasons-input" class="form-label">
+              Main reasons you're leaning this way <span class="required" aria-hidden="true">*</span>
+            </label>
+            <span id="count-reasons" class="char-count" aria-live="polite">0 / 2000</span>
+          </div>
+          <textarea
+            id="reasons-input"
+            name="reasons"
+            class="form-control"
+            rows="3"
+            maxlength="2000"
+            required
+            aria-required="true"
+            placeholder="e.g., Good stipend, close to home, gain industry experience on resume"
+            aria-describedby="desc-reasons count-reasons"
+          ></textarea>
+          <span id="desc-reasons" class="field-hint">Why does this option appeal to you? What feels compelling?</span>
+        </div>
+
+        <!-- Field 4: Unsure About -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="unsure-input" class="form-label">
+              What are you unsure about? <span class="optional">(optional)</span>
+            </label>
+            <span id="count-unsure" class="char-count" aria-live="polite">0 / 2000</span>
+          </div>
+          <textarea
+            id="unsure-input"
+            name="unsure"
+            class="form-control"
+            rows="2"
+            maxlength="2000"
+            placeholder="e.g., Managing final-year capstone project and college attendance alongside 40 hours/week"
+            aria-describedby="desc-unsure count-unsure"
+          ></textarea>
+          <span id="desc-unsure" class="field-hint">Hesitations, missing facts, or doubts currently on your mind.</span>
+        </div>
+
+        <!-- Total Counter & Action Buttons -->
+        <div class="form-footer">
+          <div class="total-counter-container">
+            <span class="total-label">Total characters:</span>
+            <span id="count-total" class="total-count">0 / 4000</span>
+          </div>
+          <div class="btn-group">
+            <button type="button" id="btn-clear-form" class="btn btn-secondary">Clear</button>
+            <button type="submit" id="btn-submit-round1" class="btn btn-primary">
+              <span class="btn-text">Analyze Blind Spots</span>
+              <span class="spinner" aria-hidden="true" style="display: none;"></span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Loading State Announcer -->
+    <div id="loading-state" class="loading-state" style="display: none;" role="status" aria-live="polite">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <p id="loading-text" class="loading-text">Analyzing your decision context for unstated assumptions and blind spots...</p>
+    </div>
+
+    <!-- Results Section (Round 1 & Round 2) -->
+    <section id="results-section" class="results-section" style="display: none;" aria-live="polite" aria-labelledby="results-heading">
+      <div class="results-top-bar">
+        <h2 id="results-heading" class="results-title" tabindex="-1">Reasoning Analysis</h2>
+        <div class="results-actions">
+          <button type="button" id="btn-copy-summary" class="btn btn-secondary btn-sm" aria-label="Copy analysis summary to clipboard">
+            📋 Copy Summary
+          </button>
+          <button type="button" id="btn-start-over" class="btn btn-outline btn-sm" aria-label="Start over with a new decision">
+            ↺ Start Over
+          </button>
+        </div>
+      </div>
+
+      <!-- Restated Summary Card -->
+      <article class="card card-summary">
+        <h3 class="card-title">Objective Restatement</h3>
+        <p id="summary-text" class="summary-body"></p>
+      </article>
+
+      <!-- Factor Coverage Grid (Accessible: Icon + Text) -->
+      <article class="card">
+        <div class="coverage-header">
+          <h3 class="card-title">Factor Coverage Assessment</h3>
+          <p class="coverage-sub">Evaluating 9 core life and decision dimensions to highlight neglected areas.</p>
+        </div>
+        <div id="factor-grid" class="factor-grid" role="list">
+          <!-- Dynamically populated factor badges -->
+        </div>
+      </article>
+
+      <!-- Two-Column Analysis Grid -->
+      <div class="analysis-grid">
+        <!-- What You Considered Well -->
+        <article class="card">
+          <h3 class="card-title text-success">
+            <span class="card-icon" aria-hidden="true">✓</span> What You Already Covered Well
+          </h3>
+          <ul id="list-considered" class="analysis-list"></ul>
+        </article>
+
+        <!-- Unstated Assumptions -->
+        <article class="card">
+          <h3 class="card-title text-warning">
+            <span class="card-icon" aria-hidden="true">🔍</span> Unstated Assumptions to Test
+          </h3>
+          <ul id="list-assumptions" class="analysis-list complex-list"></ul>
+        </article>
+
+        <!-- Overlooked Factors -->
+        <article class="card">
+          <h3 class="card-title text-danger">
+            <span class="card-icon" aria-hidden="true">👁️</span> Overlooked Factors
+          </h3>
+          <ul id="list-overlooked" class="analysis-list complex-list"></ul>
+        </article>
+
+        <!-- Conflicts & Tensions in Reasoning -->
+        <article class="card">
+          <h3 class="card-title text-purple">
+            <span class="card-icon" aria-hidden="true">⚡</span> Conflicts in Your Reasoning
+          </h3>
+          <ul id="list-conflicts" class="analysis-list complex-list"></ul>
+        </article>
+
+        <!-- Risks and Unknowns -->
+        <article class="card">
+          <h3 class="card-title text-amber">
+            <span class="card-icon" aria-hidden="true">⚠️</span> Risks & Information Gaps
+          </h3>
+          <ul id="list-risks" class="analysis-list complex-list"></ul>
+        </article>
+
+        <!-- Another Perspective to Weigh (Steelman) -->
+        <article class="card card-perspective">
+          <h3 class="card-title text-cyan">
+            <span class="card-icon" aria-hidden="true">🧭</span> Another Perspective to Weigh
+          </h3>
+          <p id="perspective-text" class="perspective-body"></p>
+        </article>
+      </div>
+
+      <!-- Round 2 Reflection Section -->
+      <section id="round2-section" class="card card-reflection" aria-labelledby="round2-heading">
+        <div class="round2-header">
+          <div class="round2-tag">Interactive Phase 2</div>
+          <h3 id="round2-heading" class="round2-title">Deepen Your Reflection</h3>
+          <p class="round2-desc">Answer these open probing questions to test your assumptions. The AI will reflect on what your answers uncover without giving advice.</p>
+        </div>
+
+        <form id="reflection-form">
+          <div id="probing-questions-container" class="probing-questions-container">
+            <!-- Dynamically populated with question cards and textareas -->
+          </div>
+
+          <div class="form-footer">
+            <button type="submit" id="btn-submit-round2" class="btn btn-primary">
+              <span class="btn-text">Reflect on Answers</span>
+              <span class="spinner" aria-hidden="true" style="display: none;"></span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Round 2 Results Container -->
+        <div id="round2-results" class="round2-results" style="display: none;" aria-live="polite">
+          <h4 class="round2-results-heading">What Your Reflection Reveals</h4>
+
+          <div class="reflection-insights-grid">
+            <div class="reflection-block">
+              <h5>Key Patterns & Revealed Priorities</h5>
+              <ul id="list-answers-reveal" class="analysis-list"></ul>
+            </div>
+            <div class="reflection-block">
+              <h5>Emerging Contradictions & Trade-offs</h5>
+              <ul id="list-answers-tensions" class="analysis-list"></ul>
+            </div>
+            <div class="reflection-block">
+              <h5>Remaining Blind Spots</h5>
+              <ul id="list-answers-blindspots" class="analysis-list"></ul>
+            </div>
+            <div class="reflection-block">
+              <h5>Ongoing Self-Reflection Prompts</h5>
+              <ul id="list-answers-prompts" class="analysis-list"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- History Modal / Drawer for signed-in users -->
+    <div id="history-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 id="history-modal-title" class="modal-title">Past Reflections</h3>
+          <button type="button" id="btn-close-history" class="btn-close-modal" aria-label="Close reflections modal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div id="history-list" class="history-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-container">
+      <p class="footer-note">
+        <strong>The Blind Spot</strong> — Built with Python 3.12, Flask, Google Gemini (2.5 Flash), and Google Cloud Run.
+      </p>
+      <p class="footer-sub">
+        Dedicated to rigorous cognitive reflection and non-directive AI assistance.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
