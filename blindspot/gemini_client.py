@@ -90,35 +90,40 @@ class GeminiClient:
             temperature=0.2,
         )
 
+        models_to_try = [self._model]
+        for fallback in ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]:
+            if fallback not in models_to_try:
+                models_to_try.append(fallback)
+
         last_error: Exception | None = None
-        for attempt in range(2):
-            try:
-                response = client.models.generate_content(
-                    model=self._model,
-                    contents=contents,
-                    config=cfg,
-                )
-                if not response.text:
-                    raise GeminiServiceError("Model returned an empty response.")
-                return response.text
-            except APIError as e:
-                last_error = e
-                logger.warning(
-                    "Gemini API error on attempt %d: %s. Retrying...", attempt + 1, e
-                )
-                if attempt == 0:
-                    time.sleep(1.0)
-            except Exception as e:
-                last_error = e
-                logger.warning(
-                    "Unexpected error calling Gemini on attempt %d: %s", attempt + 1, e
-                )
-                if attempt == 0:
-                    time.sleep(1.0)
+        for current_model in models_to_try:
+            for attempt in range(2):
+                try:
+                    response = client.models.generate_content(
+                        model=current_model,
+                        contents=contents,
+                        config=cfg,
+                    )
+                    if not response.text:
+                        raise GeminiServiceError("Model returned an empty response.")
+                    return response.text
+                except (APIError, Exception) as e:
+                    last_error = e
+                    logger.warning(
+                        "Gemini API error with %s on attempt %d: %s.",
+                        current_model,
+                        attempt + 1,
+                        e,
+                    )
+                    if attempt == 0:
+                        time.sleep(1.0)
+                    else:
+                        break  # Move to next model if retry on this model failed
 
         raise GeminiServiceError(
             f"Failed to communicate with Gemini API after retry: {last_error}"
         )
+
 
     def analyze_round1(
         self, decision: str, details: str, reasons: str, unsure: str

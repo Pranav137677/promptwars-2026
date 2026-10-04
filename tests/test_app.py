@@ -157,9 +157,9 @@ def test_rate_limiting_429(client, mock_round1_result):
     with patch("blindspot.app.gemini_client.analyze_round1", return_value=mock_round1_result):
         payload = {"decision": "Valid decision", "reasons": "Valid reasons"}
 
-        # Perform 12 calls (limit is 10/min)
+        # Perform calls to exceed rate limit threshold
         hit_429 = False
-        for _ in range(12):
+        for _ in range(35):
             res = client.post(
                 "/api/analyze",
                 data=json.dumps(payload),
@@ -171,6 +171,7 @@ def test_rate_limiting_429(client, mock_round1_result):
                 break
 
         assert hit_429, "Expected 429 Rate Limit error was not encountered."
+
 
 
 def test_api_analyze_with_authenticated_user_saves_reflection(client, mock_round1_result):

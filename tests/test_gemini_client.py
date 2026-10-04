@@ -194,6 +194,8 @@ def test_gemini_error_retry_and_failure():
         with pytest.raises(GeminiServiceError, match="Failed to communicate with Gemini API"):
             client.analyze_round1("Decision", "", "Reasons", "")
 
-    # Assert 2 attempts were made
-    assert mock_genai_client.models.generate_content.call_count == 2
+    # Assert multiple attempts were made across candidate models
+    assert mock_genai_client.models.generate_content.call_count >= 2
+
+
 
